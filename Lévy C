@@ -1,0 +1,10 @@
+#include "../turtlec.h"
+#include <math.h>
+
+void levy(Turtle *t, float length, int depth){
+
+    // Caso base
+    if(depth == 0){
+        turtleForward(t, length);
+        return;
+    }
