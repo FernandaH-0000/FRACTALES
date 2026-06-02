@@ -4,4 +4,13 @@ void fractalTree(Turtle *t, float length, int depth){
     // Caso base
     if(depth == 0 || length < 5)
         return;
-    
+    // Dibujar rama principal
+    turtleForward(t, length);
+
+    // Rama izquierda
+    turtleLeft(t, 30.0f);
+    fractalTree(t, length * 0.7f, depth - 1);
+
+    // Rama derecha
+    turtleRight(t, 60.0f);
+    fractalTree(t, length * 0.7f, depth - 1);
