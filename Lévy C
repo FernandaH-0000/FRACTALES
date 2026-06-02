@@ -22,3 +22,31 @@ void levy(Turtle *t, float length, int depth){
 
     // Recuperar orientación original
     turtleLeft(t, 45.0f);
+}
+
+int main(){
+
+    TurtleApp *app = turtleAppCreate(800, 600, "Curva de Levy");
+
+    if(app == NULL)
+        return 1;
+
+    Turtle *t = turtleAppGetTurtle(app);
+
+    turtleSetSpeed(t, 10.0f);
+
+    // Posicionar la tortuga
+    turtlePenUp(t);
+    turtleGoTo(t, 200.0f, 300.0f);
+    turtlePenDown(t);
+
+    turtleSetColor(t, 0, 0, 255);
+
+    // Dibujar curva
+    levy(t, 400.0f, 12);
+
+    turtleAppRun(app);
+    turtleAppDestroy(app);
+
+    return 0;
+}
