@@ -1,0 +1,7 @@
+#include "../turtlec.h"
+void fractalTree(Turtle *t, float length, int depth){
+
+    // Caso base
+    if(depth == 0 || length < 5)
+        return;
+    
