@@ -8,3 +8,14 @@ void levy(Turtle *t, float length, int depth){
         turtleForward(t, length);
         return;
     }
+    // Girar 45° a la izquierda
+    turtleLeft(t, 45.0f);
+
+    // Primera mitad de la curva
+    levy(t, length / sqrt(2.0f), depth - 1);
+
+    // Girar 90° a la derecha
+    turtleRight(t, 90.0f);
+
+    // Segunda mitad de la curva
+    levy(t, length / sqrt(2.0f), depth - 1);
