@@ -21,3 +21,32 @@ void fractalTree(Turtle *t, float length, int depth){
     // Volver al inicio de la rama
     turtleBackward(t, length);
 }
+
+int main(){
+
+    TurtleApp *app = turtleAppCreate(800, 600, "Arbol Fractal");
+
+    if(app == NULL)
+        return 1;
+
+    Turtle *t = turtleAppGetTurtle(app);
+
+    // Posicionar la tortuga en la base del árbol
+    turtlePenUp(t);
+    turtleGoTo(t, 400.0f, 550.0f);
+    turtlePenDown(t);
+
+    // Apuntar hacia arriba
+    turtleLeft(t, 90.0f);
+
+    turtleSetColor(t, 0, 255, 0);
+    turtleSetSpeed(t, 10.0f);
+
+    // Dibujar árbol
+    fractalTree(t, 100.0f, 8);
+
+    turtleAppRun(app);
+    turtleAppDestroy(app);
+
+    return 0;
+}
