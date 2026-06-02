@@ -14,3 +14,10 @@ void fractalTree(Turtle *t, float length, int depth){
     // Rama derecha
     turtleRight(t, 60.0f);
     fractalTree(t, length * 0.7f, depth - 1);
+
+    // Recuperar orientación original
+    turtleLeft(t, 30.0f);
+
+    // Volver al inicio de la rama
+    turtleBackward(t, length);
+}
