@@ -19,3 +19,6 @@ void levy(Turtle *t, float length, int depth){
 
     // Segunda mitad de la curva
     levy(t, length / sqrt(2.0f), depth - 1);
+
+    // Recuperar orientación original
+    turtleLeft(t, 45.0f);
