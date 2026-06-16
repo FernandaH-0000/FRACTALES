@@ -1,0 +1,242 @@
+#3.- La subasta de tesoros de Buggy
+
+
+
+//sin cmp
+#include <stdio.h>
+#include <string.h>
+
+typedef struct{
+    char name[40];
+    long long value;
+    long long weight;
+    long long rareness;
+} Treasure;
+
+char strategy[20];
+
+void swap(Treasure *a, Treasure *b){
+    Treasure temp=*a;
+    *a=*b;
+    *b=temp;
+}
+
+int compare(Treasure a, Treasure b){
+
+    if(strcmp(strategy,"VALUE")==0){
+
+        if(a.value != b.value)
+            return a.value < b.value;
+    }
+
+    else if(strcmp(strategy,"WEIGHT")==0){
+
+        if(a.weight != b.weight)
+            return a.weight > b.weight;
+    }
+
+    else if(strcmp(strategy,"RARENESS")==0){
+
+        if(a.rareness != b.rareness)
+            return a.rareness < b.rareness;
+    }
+
+    else if(strcmp(strategy,"RATIO")==0){
+
+        long long left  = a.value * b.weight;
+        long long right = b.value * a.weight;
+
+        if(left != right)
+            return left < right;
+    }
+
+    return strcmp(a.name,b.name) > 0;
+}
+
+void insertionSort(Treasure arr[], int n){
+    for(int i=1;i<n;i++){
+        int j=i;
+
+        while(j>0 && compare(arr[j-1],arr[j])){
+            swap(&arr[j-1],&arr[j]);
+            j--;
+        }
+    }
+}
+
+int main(){
+
+    int n;
+    scanf("%d",&n);
+
+    Treasure t[1000];
+
+    for(int i=0;i<n;i++){
+        scanf("%s %lld %lld %lld",
+              t[i].name,
+              &t[i].value,
+              &t[i].weight,
+              &t[i].rareness);
+    }
+
+    scanf("%s",strategy);
+
+    insertionSort(t,n);
+
+    for(int i=0;i<n;i++){
+        printf("%s\n",t[i].name);
+    }
+
+    return 0;
+}
+
+
+//con cmp dinamicos
+
+#include <stdio.h>
+#include <string.h>
+
+typedef int (*Comparator)(const void*,const void*);
+
+typedef struct{
+
+    char name[40];
+    long long value;
+    long long weight;
+    long long rareness;
+
+} Treasure;
+
+void swapBytes(void* x,void* y,int size){
+
+    unsigned char* a=x;
+    unsigned char* b=y;
+
+    for(int i=0;i<size;i++){
+
+        unsigned char temp=a[i];
+        a[i]=b[i];
+        b[i]=temp;
+    }
+}
+
+void insertionSort(void* base,int n,int size,Comparator cmp){
+
+    unsigned char* arr=base;
+
+    for(int i=1;i<n;i++){
+
+        int j=i;
+
+        while(j>0 &&
+              cmp(arr+j*size,
+                  arr+(j-1)*size)<0){
+
+            swapBytes(
+                arr+j*size,
+                arr+(j-1)*size,
+                size
+            );
+
+            j--;
+        }
+    }
+}
+
+int compareByValue(const void* x,const void* y){
+
+    Treasure* a=(Treasure*)x;
+    Treasure* b=(Treasure*)y;
+
+    if(a->value!=b->value)
+        return (b->value>a->value)?1:-1;
+
+    return strcmp(a->name,b->name);
+}
+
+int compareByWeight(const void* x,const void* y){
+
+    Treasure* a=(Treasure*)x;
+    Treasure* b=(Treasure*)y;
+
+    if(a->weight!=b->weight)
+        return a->weight-b->weight;
+
+    return strcmp(a->name,b->name);
+}
+
+int compareByRareness(const void* x,const void* y){
+
+    Treasure* a=(Treasure*)x;
+    Treasure* b=(Treasure*)y;
+
+    if(a->rareness!=b->rareness)
+        return (b->rareness>a->rareness)?1:-1;
+
+    return strcmp(a->name,b->name);
+}
+
+int compareByRatio(const void* x,const void* y){
+
+    Treasure* a=(Treasure*)x;
+    Treasure* b=(Treasure*)y;
+
+    long long left =
+        a->value * b->weight;
+
+    long long right =
+        b->value * a->weight;
+
+    if(left!=right)
+        return (right>left)?1:-1;
+
+    return strcmp(a->name,b->name);
+}
+
+int main(){
+
+    int n;
+
+    scanf("%d",&n);
+
+    Treasure t[1000];
+
+    for(int i=0;i<n;i++){
+
+        scanf("%s %lld %lld %lld",
+              t[i].name,
+              &t[i].value,
+              &t[i].weight,
+              &t[i].rareness);
+    }
+
+    char strategy[20];
+
+    scanf("%s",strategy);
+
+    Comparator cmp;
+
+    if(strcmp(strategy,"VALUE")==0)
+        cmp=compareByValue;
+
+    else if(strcmp(strategy,"WEIGHT")==0)
+        cmp=compareByWeight;
+
+    else if(strcmp(strategy,"RARENESS")==0)
+        cmp=compareByRareness;
+
+    else
+        cmp=compareByRatio;
+
+    insertionSort(
+        t,
+        n,
+        sizeof(Treasure),
+        cmp
+    );
+
+    for(int i=0;i<n;i++)
+        printf("%s\n",t[i].name);
+
+    return 0;
+}
