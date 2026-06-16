@@ -1,0 +1,224 @@
+#4.- El Log Pose y las islas repetidas
+
+
+
+// sin cmp
+#include <stdio.h>
+#include <string.h>
+
+typedef struct{
+    char island[40];
+    int day;
+    int month;
+    int danger;
+} Record;
+
+void swap(Record *a, Record *b){
+    Record temp=*a;
+    *a=*b;
+    *b=temp;
+}
+
+int compareRecords(Record a, Record b){
+
+    int cmp = strcmp(a.island,b.island);
+
+    if(cmp != 0)
+        return cmp > 0;
+
+    if(a.month != b.month)
+        return a.month > b.month;
+
+    return a.day > b.day;
+}
+
+void insertionSort(Record arr[], int n){
+
+    for(int i=1;i<n;i++){
+        int j=i;
+
+        while(j>0 &&
+              compareRecords(arr[j-1],arr[j])){
+            swap(&arr[j-1],&arr[j]);
+            j--;
+        }
+    }
+}
+
+int main(){
+
+    int n;
+    scanf("%d",&n);
+
+    Record r[1000];
+
+    for(int i=0;i<n;i++){
+        scanf("%s %d %d %d",
+              r[i].island,
+              &r[i].day,
+              &r[i].month,
+              &r[i].danger);
+    }
+
+    insertionSort(r,n);
+
+    int i=0;
+
+    while(i<n){
+
+        int count=0;
+        int maxDanger=0;
+        char island[40];
+
+        strcpy(island,r[i].island);
+
+        while(i<n &&
+              strcmp(r[i].island,island)==0){
+
+            count++;
+
+            if(r[i].danger > maxDanger)
+                maxDanger = r[i].danger;
+
+            i++;
+        }
+
+        printf("%s %d %d\n",
+               island,
+               count,
+               maxDanger);
+    }
+
+    return 0;
+}
+
+
+/con cmp
+
+#include <stdio.h>
+#include <string.h>
+
+typedef int (*Comparator)(const void*,const void*);
+
+typedef struct{
+
+    char island[40];
+    int day;
+    int month;
+    int danger;
+
+} Record;
+
+void swapBytes(void* x,void* y,int size){
+
+    unsigned char* a=x;
+    unsigned char* b=y;
+
+    for(int i=0;i<size;i++){
+
+        unsigned char temp=a[i];
+        a[i]=b[i];
+        b[i]=temp;
+    }
+}
+
+void insertionSort(void* base,int n,int size,Comparator cmp){
+
+    unsigned char* arr=base;
+
+    for(int i=1;i<n;i++){
+
+        int j=i;
+
+        while(j>0 &&
+              cmp(arr+j*size,
+                  arr+(j-1)*size)<0){
+
+            swapBytes(
+                arr+j*size,
+                arr+(j-1)*size,
+                size
+            );
+
+            j--;
+        }
+    }
+}
+
+int compareRecords(
+    const void* x,
+    const void* y){
+
+    Record* a=(Record*)x;
+    Record* b=(Record*)y;
+
+    int cmp=
+        strcmp(a->island,b->island);
+
+    if(cmp!=0)
+        return cmp;
+
+    if(a->month!=b->month)
+        return a->month-b->month;
+
+    return a->day-b->day;
+}
+
+int main(){
+
+    int n;
+
+    scanf("%d",&n);
+
+    Record records[1000];
+
+    for(int i=0;i<n;i++){
+
+        scanf("%s %d %d %d",
+              records[i].island,
+              &records[i].day,
+              &records[i].month,
+              &records[i].danger);
+    }
+
+    insertionSort(
+        records,
+        n,
+        sizeof(Record),
+        compareRecords
+    );
+
+    int i=0;
+
+    while(i<n){
+
+        char current[40];
+        strcpy(current,
+               records[i].island);
+
+        int count=0;
+        int maxDanger=0;
+
+        while(i<n &&
+              strcmp(records[i].island,
+                     current)==0){
+
+            count++;
+
+            if(records[i].danger >
+               maxDanger)
+
+                maxDanger=
+                records[i].danger;
+
+            i++;
+        }
+
+        printf("%s %d %d\n",
+               current,
+               count,
+               maxDanger);
+    }
+
+    return 0;
+}
