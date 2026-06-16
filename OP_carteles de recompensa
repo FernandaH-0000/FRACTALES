@@ -1,0 +1,171 @@
+#1.- Los carteles de recompensa de la marina
+
+
+//sin cmp
+#include <stdio.h>
+#include <string.h>
+
+typedef struct{
+    char name[40];
+    long long bounty;
+    int age;
+    char crew[40];
+} Pirate;
+
+void swap(Pirate *a, Pirate *b){
+    Pirate temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+int comparePirates(Pirate a, Pirate b){
+    if(a.bounty != b.bounty)
+        return (a.bounty < b.bounty);
+
+    if(a.age != b.age)
+        return (a.age > b.age);
+
+    int cmp = strcmp(a.name, b.name);
+    if(cmp != 0)
+        return cmp > 0;
+
+    return strcmp(a.crew, b.crew) > 0;
+}
+
+void insertionSort(Pirate arr[], int n){
+    for(int i=1;i<n;i++){
+        int j=i;
+        while(j>0 && comparePirates(arr[j-1], arr[j])){
+            swap(&arr[j-1], &arr[j]);
+            j--;
+        }
+    }
+}
+
+int main(){
+    int n;
+    scanf("%d",&n);
+
+    Pirate p[1000];
+
+    for(int i=0;i<n;i++){
+        scanf("%s %lld %d %s",
+              p[i].name,
+              &p[i].bounty,
+              &p[i].age,
+              p[i].crew);
+    }
+
+    insertionSort(p,n);
+
+    for(int i=0;i<n;i++){
+        printf("%s %lld %d %s\n",
+               p[i].name,
+               p[i].bounty,
+               p[i].age,
+               p[i].crew);
+    }
+
+    return 0;
+}
+
+
+//con cmp
+
+#include <stdio.h>
+#include <string.h>
+
+typedef int (*Comparator)(const void*, const void*);
+
+typedef struct{
+    char name[40];
+    long long bounty;
+    int age;
+    char crew[40];
+} Pirate;
+
+void swapBytes(void* x, void* y, int size){
+    unsigned char* a = x;
+    unsigned char* b = y;
+
+    for(int i=0;i<size;i++){
+        unsigned char temp=a[i];
+        a[i]=b[i];
+        b[i]=temp;
+    }
+}
+
+void insertionSort(void* base,int n,int size,Comparator cmp){
+
+    unsigned char* arr=(unsigned char*)base;
+
+    for(int i=1;i<n;i++){
+
+        int j=i;
+
+        while(j>0 &&
+              cmp(arr+j*size,
+                  arr+(j-1)*size) < 0){
+
+            swapBytes(arr+j*size,
+                      arr+(j-1)*size,
+                      size);
+
+            j--;
+        }
+    }
+}
+
+int comparePirates(const void* x,const void* y){
+
+    Pirate* a=(Pirate*)x;
+    Pirate* b=(Pirate*)y;
+
+    if(a->bounty != b->bounty)
+        return (b->bounty > a->bounty) ? 1 : -1;
+
+    if(a->age != b->age)
+        return a->age - b->age;
+
+    int cmp=strcmp(a->name,b->name);
+
+    if(cmp!=0)
+        return cmp;
+
+    return strcmp(a->crew,b->crew);
+}
+
+int main(){
+
+    int n;
+    scanf("%d",&n);
+
+    Pirate pirates[1000];
+
+    for(int i=0;i<n;i++){
+
+        scanf("%s %lld %d %s",
+              pirates[i].name,
+              &pirates[i].bounty,
+              &pirates[i].age,
+              pirates[i].crew);
+    }
+
+    insertionSort(
+        pirates,
+        n,
+        sizeof(Pirate),
+        comparePirates
+    );
+
+    for(int i=0;i<n;i++){
+
+        printf("%s %lld %d %s\n",
+               pirates[i].name,
+               pirates[i].bounty,
+               pirates[i].age,
+               pirates[i].crew);
+    }
+
+    return 0;
+}
