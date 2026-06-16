@@ -1,0 +1,153 @@
+#2.- La fila del Baratie
+
+
+//sin cmp
+#include <stdio.h>
+#include <string.h>
+
+typedef struct{
+    char customer[40];
+    char dish[20];
+} Order;
+
+int priority(char dish[]){
+    if(strcmp(dish,"MEAT")==0) return 1;
+    if(strcmp(dish,"FISH")==0) return 2;
+    if(strcmp(dish,"DESSERT")==0) return 3;
+    return 4; // DRINK
+}
+
+void swap(Order *a, Order *b){
+    Order temp=*a;
+    *a=*b;
+    *b=temp;
+}
+
+void insertionSort(Order arr[], int n){
+    for(int i=1;i<n;i++){
+        int j=i;
+
+        while(j>0 &&
+              priority(arr[j].dish) <
+              priority(arr[j-1].dish))
+        {
+            swap(&arr[j],&arr[j-1]);
+            j--;
+        }
+    }
+}
+
+int main(){
+    int n;
+    scanf("%d",&n);
+
+    Order orders[1000];
+
+    for(int i=0;i<n;i++){
+        scanf("%s %s",
+              orders[i].customer,
+              orders[i].dish);
+    }
+
+    insertionSort(orders,n);
+
+    for(int i=0;i<n;i++){
+        printf("%s\n",orders[i].customer);
+    }
+
+    return 0;
+}
+
+
+//con cmp
+
+#include <stdio.h>
+#include <string.h>
+
+typedef int (*Comparator)(const void*, const void*);
+
+typedef struct{
+    char customer[40];
+    char dish[20];
+} Order;
+
+void swapBytes(void* x,void* y,int size){
+
+    unsigned char* a=x;
+    unsigned char* b=y;
+
+    for(int i=0;i<size;i++){
+
+        unsigned char temp=a[i];
+        a[i]=b[i];
+        b[i]=temp;
+    }
+}
+
+void insertionSort(void* base,int n,int size,Comparator cmp){
+
+    unsigned char* arr=base;
+
+    for(int i=1;i<n;i++){
+
+        int j=i;
+
+        while(j>0 &&
+              cmp(arr+j*size,
+                  arr+(j-1)*size)<0){
+
+            swapBytes(arr+j*size,
+                      arr+(j-1)*size,
+                      size);
+
+            j--;
+        }
+    }
+}
+
+int priority(char dish[]){
+
+    if(strcmp(dish,"MEAT")==0) return 1;
+    if(strcmp(dish,"FISH")==0) return 2;
+    if(strcmp(dish,"DESSERT")==0) return 3;
+
+    return 4;
+}
+
+int compareOrders(const void* x,const void* y){
+
+    Order* a=(Order*)x;
+    Order* b=(Order*)y;
+
+    int pa=priority(a->dish);
+    int pb=priority(b->dish);
+
+    return pa-pb;
+}
+
+int main(){
+
+    int n;
+    scanf("%d",&n);
+
+    Order orders[1000];
+
+    for(int i=0;i<n;i++){
+
+        scanf("%s %s",
+              orders[i].customer,
+              orders[i].dish);
+    }
+
+    insertionSort(
+        orders,
+        n,
+        sizeof(Order),
+        compareOrders
+    );
+
+    for(int i=0;i<n;i++)
+        printf("%s\n",orders[i].customer);
+
+    return 0;
+}
